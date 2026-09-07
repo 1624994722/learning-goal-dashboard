@@ -371,6 +371,14 @@
   .confetti-bit{position:fixed;top:-12px;z-index:98;border-radius:2px;pointer-events:none;animation:confetti-fall linear forwards}
   @keyframes confetti-fall{to{transform:translateY(105vh) rotate(720deg);opacity:.7}}
 
+  /* ---------- 动效系统：滚动 reveal / 按压反馈 / 番茄运行光晕 ---------- */
+  .rv{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s cubic-bezier(.22,.8,.32,1);transition-delay:var(--rvd,0ms)}
+  .rv.rv-in{opacity:1;transform:none}
+  .btn:active{transform:scale(.96)}
+  .nav button:active{transform:scale(.94)}
+  .pomo-glass.running::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;animation:pomoGlow 2.6s ease-in-out infinite}
+  @keyframes pomoGlow{0%,100%{box-shadow:0 0 0 0 rgba(26,26,26,0)}50%{box-shadow:0 6px 34px -4px rgba(26,26,26,.28)}}
+
   /* ---------- Empty ---------- */
   .empty{padding:36px 20px;text-align:center;color:var(--ink-3);font-size:14px}
 
@@ -2052,6 +2060,186 @@ pomoInit();
 render();
 pullRemote(function(ok){ if(ok){ render(); } });
 if(bootNotice) setTimeout(function(){ toast(bootNotice); },100);
+})();
+</script>
+<script>
+/* ================= 动效系统（GSAP 编排 + Anime.js 环动画 + IO 滚动 reveal） =================
+   降级策略：prefers-reduced-motion 全开静态；CDN 三源回退，全部失败则页面保持静态可用 */
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- 多源 CDN 加载 ---------- */
+  function loadOne(urls, test, cb){
+    var i=0;
+    (function next(){
+      if(i>=urls.length){ cb(false); return; }
+      var s=document.createElement("script"), done=false;
+      var timer=setTimeout(function(){ if(done) return; done=true; s.onload=s.onerror=null; if(s.parentNode) s.parentNode.removeChild(s); next(); },4000);
+      s.src=urls[i++];
+      s.onload=function(){ if(done) return; done=true; clearTimeout(timer); if(test()){ cb(true); } else { if(s.parentNode) s.parentNode.removeChild(s); next(); } };
+      s.onerror=function(){ if(done) return; done=true; clearTimeout(timer); if(s.parentNode) s.parentNode.removeChild(s); next(); };
+      document.head.appendChild(s);
+    })();
+  }
+  var GSAP_URLS=[
+    "https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/gsap/3.13.0/gsap.min.js",
+    "https://unpkg.com/gsap@3.13.0/dist/gsap.min.js"
+  ];
+  var ANIME_URLS=[
+    "https://cdn.jsdelivr.net/npm/animejs@3.2.2/lib/anime.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/animejs/3.2.2/anime.min.js",
+    "https://unpkg.com/animejs@3.2.2/lib/anime.min.js"
+  ];
+
+  function $(s,c){ return (c||document).querySelector(s); }
+  function $all(s,c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); }
+  var REVEAL_SEL=".goal-card,.card,.missed-card,.rest-card,.stat-card,.board-sec-title,.week-summary-row,.all-done,.pomo-hist-row,.feed-row";
+
+  /* ---------- IO 滚动 reveal（零库依赖） ---------- */
+  var io=null;
+  if("IntersectionObserver" in window && !REDUCED){
+    io=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add("rv-in"); io.unobserve(en.target); }
+      });
+    },{rootMargin:"0px 0px -6% 0px",threshold:.06});
+  }
+  function revealIn(container){
+    if(!io||REDUCED) return;
+    var idx=0;
+    $all(REVEAL_SEL,container||document).forEach(function(el){
+      if(el.classList.contains("rv")||el.classList.contains("rv-in")) return;
+      el.classList.add("rv");
+      el.style.setProperty("--rvd",(Math.min(idx++,8)*55)+"ms");
+      io.observe(el);
+    });
+  }
+
+  /* ---------- 看板进度环描边补间（Anime.js） ---------- */
+  function animateRings(){
+    if(!window.anime||REDUCED) return;
+    $all(".ring svg").forEach(function(svg,i){
+      var c=svg.querySelectorAll("circle")[1];
+      if(!c) return;
+      var da=parseFloat(c.getAttribute("stroke-dasharray")), off=parseFloat(c.getAttribute("stroke-dashoffset"));
+      if(!isFinite(da)||!isFinite(off)) return;
+      c.style.transition="none";
+      var o={v:da};
+      anime({targets:o,v:off,duration:900,delay:i*90,easing:"easeOutQuart",
+        update:function(){ c.setAttribute("stroke-dashoffset",o.v.toFixed(1)); },
+        complete:function(){ c.style.transition=""; }});
+    });
+  }
+
+  /* ---------- Hero 数字滚动（GSAP） ---------- */
+  var heroNumCache={};
+  function countHeroNums(){
+    if(!window.gsap||REDUCED) return;
+    $all("#heroChips .num").forEach(function(el,i){
+      var txt=el.textContent.trim();
+      if(!/^\d+$/.test(txt)) return;
+      var val=parseInt(txt,10), key="h"+i, from=heroNumCache[key];
+      heroNumCache[key]=val;
+      if(from===undefined||from===val) return;
+      var o={v:from};
+      gsap.to(o,{v:val,duration:.6,ease:"power2.out",snap:{v:1},onUpdate:function(){ el.textContent=Math.round(o.v); }});
+    });
+  }
+
+  /* ---------- Tab 切换过渡 ---------- */
+  function afterShow(name){
+    var p=document.getElementById("panel-"+name);
+    if(!p) return;
+    revealIn(p);
+    if(window.gsap&&!REDUCED) gsap.fromTo(p,{y:6},{y:0,duration:.35,ease:"power2.out",clearProps:"transform"});
+    if(name==="board") animateRings();
+  }
+  function hookSwitchTab(){
+    var orig=window.switchTab;
+    if(typeof orig!=="function") return;
+    window.switchTab=function(name,focus){
+      var cur=document.querySelector(".tab-panel.active");
+      if(REDUCED||!window.gsap||!cur||cur.id==="panel-"+name){ orig(name,focus); afterShow(name); return; }
+      var items=$all(REVEAL_SEL,cur).slice(0,8);
+      var targets=items.length?items:[cur];
+      gsap.to(targets,{autoAlpha:0,y:8,duration:.14,ease:"power1.in",stagger:.015,overwrite:"auto",onComplete:function(){
+        gsap.set(targets,{clearProps:"all"});
+        orig(name,focus);
+        afterShow(name);
+      }});
+    };
+  }
+
+  /* ---------- render / toast / pomo 包装 ---------- */
+  function wrapRender(){
+    var orig=window.render;
+    if(typeof orig!=="function") return;
+    window.render=function(){ orig.apply(this,arguments); countHeroNums(); };
+  }
+  function wrapToast(){
+    var orig=window.toast;
+    if(typeof orig!=="function") return;
+    window.toast=function(msg){
+      orig.apply(this,arguments);
+      if(window.gsap&&!REDUCED){
+        gsap.fromTo("#toast",{y:16,autoAlpha:0,scale:.96},{y:0,autoAlpha:1,scale:1,duration:.35,ease:"back.out(1.8)",overwrite:"auto",
+          onComplete:function(){ gsap.set("#toast",{clearProps:"opacity,visibility,transform"}); }});
+      }
+    };
+  }
+  var lastPomoMode=null;
+  function wrapPomo(){
+    var orig=window.pomoRender;
+    if(typeof orig!=="function") return;
+    window.pomoRender=function(){
+      orig.apply(this,arguments);
+      var glass=document.querySelector(".pomo-glass");
+      if(glass) glass.classList.toggle("running",!!window.pomoRunning);
+      if(window.gsap&&!REDUCED&&window.pomoMode!==lastPomoMode){
+        lastPomoMode=window.pomoMode;
+        gsap.fromTo("#pomoTime",{scale:.85,autoAlpha:.4},{scale:1,autoAlpha:1,duration:.45,ease:"back.out(2)",overwrite:"auto"});
+      }
+    };
+  }
+
+  /* ---------- 按压弹性反馈（触屏与鼠标通用） ---------- */
+  var PRESS_SEL=".btn,.nav button,.icon-btn,.mine-btn,.side-add,.pomo-modes button";
+  function bindPress(){
+    if(!window.gsap||REDUCED) return;
+    document.addEventListener("pointerdown",function(e){
+      var b=e.target&&e.target.closest?e.target.closest(PRESS_SEL):null;
+      if(b) gsap.to(b,{scale:.94,duration:.12,ease:"power2.out",overwrite:"auto"});
+    });
+    ["pointerup","pointercancel"].forEach(function(ev){
+      document.addEventListener(ev,function(e){
+        var b=e.target&&e.target.closest?e.target.closest(PRESS_SEL):null;
+        if(b) gsap.to(b,{scale:1,duration:.45,ease:"elastic.out(1,.55)",overwrite:"auto"});
+      });
+    });
+  }
+
+  /* ---------- 首屏入场编排 ---------- */
+  function bootEntrance(){
+    var active=document.querySelector(".tab-panel.active");
+    if(active) revealIn(active);
+    if(!window.gsap||REDUCED) return;
+    var heroKids=$all(".hero-inner > *");
+    var navBtns=$all(".nav button");
+    var tl=gsap.timeline({defaults:{ease:"power3.out"}});
+    if(heroKids.length) tl.from(heroKids,{y:18,autoAlpha:0,duration:.55,stagger:.09},0);
+    if(navBtns.length) tl.from(navBtns,{y:14,autoAlpha:0,duration:.4,stagger:.05,clearProps:"all"},.15);
+    if(active) animateRingsIfBoard(active);
+  }
+  function animateRingsIfBoard(panel){ if(panel.id==="panel-board") animateRings(); }
+
+  /* ---------- 启动 ---------- */
+  loadOne(GSAP_URLS,function(){ return !!window.gsap; },function(){
+    loadOne(ANIME_URLS,function(){ return !!window.anime; },function(){
+      hookSwitchTab(); wrapRender(); wrapToast(); wrapPomo(); bindPress(); bootEntrance();
+    });
+  });
 })();
 </script>
 </body>
