@@ -964,6 +964,36 @@ body{font-family:'Manrope',system-ui,-apple-system,'Segoe UI','PingFang SC','Hir
 .site-footer .lg .word{position:static;font-size:14px}
 .site-note{text-align:center;color:#5a5959;font-size:12px;margin-top:26px;font-family:'Manrope',sans-serif}
 @media(max-width:640px){.site-footer .logos{gap:22px}}
+
+/* ============ 设计语言统一：工作台 → 落地页体系 ============ */
+/* 按钮 = 全圆角 pill；主按钮复刻 landing CTA（白底/黑字/字重500/无阴影无渐变） */
+.btn{border-radius:999px;font-weight:500;transition:transform .18s cubic-bezier(.22,1,.36,1),opacity .18s,background .18s,border-color .18s,color .18s}
+.btn-brand{background:#ffffff;color:#050505;box-shadow:none}
+.btn-brand:hover{background:#e8e8e8}
+/* 次按钮 = 描边银字幽灵（对应 landing 的 ghost/nav 银阶） */
+.btn-ghost{background:transparent;color:#b6b5b5;border:1px solid rgba(255,255,255,.16)}
+.btn-ghost:hover{border-color:rgba(255,255,255,.32);color:#fafafa}
+/* 语义按钮 = 淡色 tint pill（保留语义、收敛声量） */
+.btn-red{background:rgba(248,113,113,.13);color:#f87171;border:1px solid rgba(248,113,113,.32)}
+.btn-red:hover{background:rgba(248,113,113,.22)}
+.btn-amber{background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.30)}
+.btn-amber:hover{background:rgba(251,191,36,.20)}
+.btn-green{background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.30)}
+.btn-green:hover{background:rgba(52,211,153,.20)}
+.icon-btn{border-radius:999px}
+.side-add{border-radius:999px;color:#050505;font-weight:500;box-shadow:none}
+.fab-add{border-radius:999px;color:#b6b5b5}
+/* 表面 = 边框化去阴影（landing 无卡片无阴影，工作台以 1px 边代替投影） */
+.card,.goal-card,.goal-row,.stat-card{box-shadow:none;border-color:rgba(255,255,255,.08)}
+.mini-progress{box-shadow:none}
+/* 字排 = 克制字重（landing 标题 400 / 组件 500-600） */
+.card-title{font-weight:600;letter-spacing:.01em}
+.goal-name{font-weight:600}
+.app-hero h1{font-weight:500;letter-spacing:.01em}
+/* 输入 = 细边框 */
+.checkin input,.checkin select,.pomo-durations input,.modal input,.modal select,.modal textarea{border-width:1px}
+/* 缓动统一为 landing 的 ease-out-expo 族 */
+.goal-card,.goal-row,.mine-btn,.nav button,.icon-btn,.stat-card{transition-timing-function:cubic-bezier(.22,1,.36,1)}
 </style>
 </head>
 <body data-sp-bindable="database" data-sp-database-id="00Gdjo9cPxyffcHKABtKPG">
