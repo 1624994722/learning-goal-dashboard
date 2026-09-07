@@ -356,6 +356,61 @@
   .color-pick button.sel{border-color:var(--ink);transform:scale(1.08)}
   .modal-actions{display:flex;gap:10px;margin-top:18px}
   .modal-actions .btn{flex:1;min-height:50px}
+  .btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+
+  /* ---------- 文档导入（.md / .xlsx → 任务计划） ---------- */
+  .imp-stage{display:none}
+  .imp-stage.show{display:block}
+  .imp-drop{
+    border:2px dashed #d8d2c4;border-radius:16px;background:#fbfaf6;padding:30px 18px;text-align:center;
+    cursor:pointer;transition:border-color .2s,background .2s,transform .2s;outline:none;
+  }
+  .imp-drop:focus-visible{outline:3px solid rgba(26,26,26,.22);outline-offset:2px}
+  .imp-drop svg{margin:0 auto 10px;color:var(--ink-3);transition:color .2s,transform .2s}
+  .imp-drop b{display:block;font-size:15px;font-weight:700;color:var(--ink)}
+  .imp-drop span{display:block;margin-top:6px;font-size:12.5px;color:var(--ink-3)}
+  .imp-drop.dragover{
+    border-color:var(--brand);background:#f3f0e7;transform:scale(1.015);
+  }
+  .imp-drop.dragover svg{color:var(--brand);transform:translateY(-3px)}
+  .imp-tip{margin-top:12px;font-size:12px;color:var(--ink-3);text-align:center;line-height:1.7}
+  .imp-loading{padding:34px 0;text-align:center;color:var(--ink-2);font-size:14px;font-weight:600}
+  .imp-loading .spinner{
+    display:block;margin:0 auto 14px;width:30px;height:30px;border-radius:50%;
+    border:3px solid #e9e5da;border-top-color:var(--brand);animation:impSpin .8s linear infinite;
+  }
+  @keyframes impSpin{to{transform:rotate(360deg)}}
+  .imp-err{
+    display:none;margin-top:12px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;
+    background:#fef2f2;border:1.5px solid #fecaca;color:var(--red);text-align:center;
+  }
+  .imp-err.show{display:block}
+  .imp-head{font-size:13.5px;font-weight:600;color:var(--ink-2);margin-bottom:12px}
+  .imp-head b{color:var(--ink);font-size:15px}
+  .imp-list{max-height:44vh;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:2px;margin:-2px}
+  .imp-task{border:1.5px solid var(--line);border-radius:13px;padding:10px 10px 12px;background:#fbfaf6}
+  .imp-task.is-del{opacity:.35}
+  .imp-row{display:flex;gap:8px;align-items:center}
+  .imp-row + .imp-row{margin-top:8px}
+  .imp-row input[type="text"]{
+    flex:1;min-width:0;min-height:44px;border:1.5px solid var(--line);border-radius:10px;padding:0 12px;background:#fff;outline:none;font-size:14px;
+  }
+  .imp-row input[type="text"]:focus{border-color:var(--brand)}
+  .imp-row input.imp-name{font-weight:700}
+  .imp-prio{
+    flex:none;min-height:44px;border:1.5px solid var(--line);border-radius:10px;padding:0 8px;background:#fff;
+    font-size:13px;font-weight:700;color:var(--ink-2);outline:none;
+  }
+  .imp-del{
+    flex:none;width:44px;height:44px;border-radius:10px;color:var(--ink-3);display:flex;align-items:center;justify-content:center;transition:all .15s;
+  }
+  .imp-del:hover{background:#fee2e2;color:var(--red)}
+  .imp-date{
+    flex:none;min-height:44px;border:1.5px solid var(--line);border-radius:10px;padding:0 10px;background:#fff;
+    font-size:13.5px;color:var(--ink);outline:none;font-family:inherit;
+  }
+  .imp-date-label{flex:none;font-size:12.5px;font-weight:600;color:var(--ink-3)}
+  .imp-empty{padding:26px 0;text-align:center;color:var(--ink-3);font-size:13.5px}
 
   /* ---------- Weekly ---------- */
   .week-nav{display:flex;align-items:center;gap:10px;margin-bottom:14px}
@@ -633,6 +688,9 @@
     <div data-page-node-id="X2AxOUF00FKcJAnXnvFv5m" class="quick-add-row"><button data-page-node-id="RDwSZkfnhVOfWgJSQt8PWv" aria-label="新建学习目标" class="btn btn-brand" data-addgoal>
       <svg data-page-node-id="cVOgznKVsLTHhRNCxB17JK" fill="none" height="18" stroke="currentColor" stroke-linecap="round" stroke-width="2.4" viewBox="0 0 24 24" width="18"><path data-page-node-id="3WWFVuudXIIXlrezCa6szj" d="M12 5v14M5 12h14"/></svg><!--pnid:MNf0G9Bbt3pQ7BZOtmNZ8m-->
       新建目标
+    </button><button aria-label="导入文档生成任务计划" class="btn btn-ghost" data-docimport>
+      <svg fill="none" height="17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="17"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+      导入文档
     </button></div>
     <div data-page-node-id="wVSXS8oZeYSO4xbVQsIRHy" class="today-zone" id="todayZone"></div>
     <div data-page-node-id="GNg9auQLWiifF0GOlQDkJs" class="today-grid" id="todayList"></div>
@@ -759,6 +817,10 @@
     <div data-page-node-id="SRZYeKvsOfkKWi1iOKGPMI" class="card">
       <div data-page-node-id="C7taFPXnHBCH3OdsadPqBy" class="card-title"><span data-page-node-id="wHyuXI3ZVXQZ5Zr7cFDD6i" class="dot"></span><!--pnid:CQojflxvZOLocChqRW4zLX-->数据管理</div>
       <div data-page-node-id="THbAlduTpaIqzLMrBI4clG" class="mine-list">
+        <button aria-label="导入文档生成任务计划" class="mine-btn" data-docimport>
+          <svg fill="none" height="17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="17"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+          导入文档生成任务（.md / .xlsx）
+        </button>
         <button data-page-node-id="18aazsNkrPgmyKGTHnsk2d" class="mine-btn danger" id="btnClearAll">
           <svg data-page-node-id="l63tADHi8nlY4eFP0nRisq" fill="none" height="17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="17"><path data-page-node-id="nBp9O3wNUIUsCR6La0YdVG" d="M3 6h18"/><path data-page-node-id="uYhwVWcCrQDRIjkLT1IIyo" d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path data-page-node-id="VVRWvjJazCbduexTbkdxv0" d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><!--pnid:kDMYUAIjZn8BhUR8YQ4ykN-->
           清空全部数据
@@ -833,6 +895,52 @@
 </div>
 
 <div data-page-node-id="tdfKGguHRMIuuH90fkepnp" aria-atomic="true" aria-live="polite" class="toast" id="toast" role="status"></div>
+
+<!-- Import Modal：文档导入（.md / .xlsx → 任务计划） -->
+<div aria-hidden="true" class="modal-mask" id="importModal">
+  <div aria-labelledby="importTitle" aria-modal="true" class="modal" role="dialog" tabindex="-1">
+    <h3 id="importTitle">导入文档生成任务</h3>
+
+    <!-- 状态一：选择文件 -->
+    <div class="imp-stage show" id="impStagePick">
+      <div aria-label="点击选择或拖拽文件到此处上传" class="imp-drop" id="impDrop" role="button" tabindex="0">
+        <svg fill="none" height="34" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewBox="0 0 24 24" width="34"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>
+        <b>点击选择，或拖拽文件到此处</b>
+        <span>支持 .md（Markdown）与 .xlsx（Excel）格式</span>
+      </div>
+      <div class="imp-err" id="impErr" role="alert"></div>
+      <p class="imp-tip">
+        Markdown 中以列表（- / 1.）或标题（#）书写的行会识别为任务，行内可标注优先级（【高】【中】【低】）与预计时间（如「5天」「9月15日」）；<br>
+        Excel 请使用表头列：任务名称 / 描述 / 优先级 / 预计完成时间。
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="impCancel1">取消</button>
+        <button class="btn btn-brand" id="impPick">选择文件</button>
+      </div>
+    </div>
+
+    <!-- 状态二：解析中 -->
+    <div class="imp-stage" id="impStageLoading">
+      <div class="imp-loading">
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="impLoadingText">正在解析文档…</span>
+      </div>
+    </div>
+
+    <!-- 状态三：预览编辑 -->
+    <div class="imp-stage" id="impStagePreview">
+      <div class="imp-head">已解析 <b id="impCount">0</b> 个任务 · 可直接编辑或删除，确认后导入</div>
+      <div class="imp-list" id="impList"></div>
+      <div class="imp-err" id="impErr2" role="alert"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="impBack">重新选择</button>
+        <button class="btn btn-brand" id="impConfirm">导入任务</button>
+      </div>
+    </div>
+
+    <input accept=".md,.xlsx" id="impFile" type="file" hidden>
+  </div>
+</div>
 
 <script data-page-node-id="NVayM8cNuMNjsIWvC7YKix" data-pnid-children="cQH7Q3Idg9iij7tER93IuV">
 (function(){
@@ -1613,6 +1721,380 @@ function closeGoalModal(){
   modalReturnFocus=null;
 }
 
+/* ================= 文档导入（.md / .xlsx → 任务计划） ================= */
+var IMP_PRIOS = {
+  high: { label:"高", color:"#ef4444", days:3 },
+  mid:  { label:"中", color:"#f59e0b", days:7 },
+  low:  { label:"低", color:"#14b8a6", days:14 }
+};
+var IMP_MAX = 200;                                   /* 单次导入任务上限，防御超大文档 */
+var IMP_MAX_BYTES = 10 * 1024 * 1024;
+var XLSX_URLS = [
+  "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js",
+  "https://cdn.bootcdn.net/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",
+  "https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"
+];
+var impTasks = [];            /* 待导入任务：{name, desc, prio, deadline} */
+var impReturnFocus = null;
+var impParsing = false;
+
+/* ---- 弹窗三态切换与错误提示 ---- */
+function impShow(stage){
+  $("impStagePick").classList.toggle("show", stage === "pick");
+  $("impStageLoading").classList.toggle("show", stage === "loading");
+  $("impStagePreview").classList.toggle("show", stage === "preview");
+}
+function impError(msg, which){
+  var el = $(which === "preview" ? "impErr2" : "impErr");
+  if(!el) return;
+  el.textContent = msg;
+  el.classList.add("show");
+}
+function impClearErrors(){
+  $("impErr").classList.remove("show");
+  $("impErr2").classList.remove("show");
+}
+function openImportModal(){
+  if(impParsing) return;
+  impReturnFocus = document.activeElement;
+  impTasks = [];
+  impClearErrors();
+  $("impFile").value = "";
+  $("impDrop").classList.remove("dragover");
+  impShow("pick");
+  $("importModal").classList.add("show");
+  $("importModal").setAttribute("aria-hidden", "false");
+  setTimeout(function(){ $("impDrop").focus(); }, 0);
+}
+function closeImportModal(){
+  if(impParsing){ toast("正在解析中，请稍候"); return; }
+  $("importModal").classList.remove("show");
+  $("importModal").setAttribute("aria-hidden", "true");
+  if(impReturnFocus && document.contains(impReturnFocus)) impReturnFocus.focus();
+  impReturnFocus = null;
+}
+
+/* ---- 优先级解析：P0/P1/P2、高/中/低、括注（【高】） ---- */
+function impParsePrio(raw){
+  var s = String(raw == null ? "" : raw).trim().toLowerCase();
+  if(!s) return null;
+  if(["p0","高","高优先","紧急","重要"].indexOf(s) >= 0) return "high";
+  if(["p1","中","中优先","一般"].indexOf(s) >= 0) return "mid";
+  if(["p2","低","低优先","不急"].indexOf(s) >= 0) return "low";
+  if(s.indexOf("高") >= 0 || s.indexOf("p0") >= 0 || s.indexOf("紧急") >= 0) return "high";
+  if(s.indexOf("低") >= 0 || s.indexOf("p2") >= 0) return "low";
+  if(s.indexOf("中") >= 0 || s.indexOf("p1") >= 0) return "mid";
+  return null;
+}
+
+/* ---- 预计完成时间 → 具体日期 ---- */
+function impResolveDate(raw){
+  if(raw instanceof Date && !isNaN(raw.getTime())) return fmtDate(raw);
+  var s = String(raw == null ? "" : raw).trim();
+  if(!s) return null;
+  var m = s.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+  if(m){
+    var d = new Date(+m[1], +m[2] - 1, +m[3]);
+    return isNaN(d.getTime()) ? null : fmtDate(d);
+  }
+  m = s.match(/^(\d{1,2})月(\d{1,2})[日号]?$/);
+  if(m){
+    var now = new Date();
+    var d2 = new Date(now.getFullYear(), +m[1] - 1, +m[2]);
+    if(fmtDate(d2) < todayStr()) d2 = new Date(now.getFullYear() + 1, +m[1] - 1, +m[2]);
+    return fmtDate(d2);
+  }
+  m = s.match(/^(\d+(?:\.\d+)?)\s*周/);
+  if(m) return addDays(todayStr(), Math.max(0, Math.round(parseFloat(m[1]) * 7)));
+  m = s.match(/^(\d+(?:\.\d+)?)\s*(?:天|日)$/);
+  if(m) return addDays(todayStr(), Math.max(0, Math.round(parseFloat(m[1]))));
+  m = s.match(/^(\d+(?:\.\d+)?)\s*(?:小时|h)/i);
+  if(m) return addDays(todayStr(), Math.max(1, Math.ceil(parseFloat(m[1]) / 8)));
+  m = s.match(/^(\d{1,3})$/);
+  if(m) return addDays(todayStr(), +m[1]);
+  return null;
+}
+
+/* ---- 单行文本 → 任务对象 ---- */
+function impParseTaskLine(rest){
+  var parts = String(rest).split("|");
+  var name = "", desc = "", prio = null, dl = null;
+  if(parts.length >= 2){
+    name = parts[0].trim();
+    desc = (parts[1] || "").trim();
+    prio = impParsePrio(parts[2] || "") || "mid";
+    dl = impResolveDate(parts[3] || "");
+  }else{
+    var s = rest;
+    var pm = s.match(/[（(\[【]\s*(高|中|低|P[012]|紧急|重要|一般)\s*[)）\]】]/);
+    if(pm){ prio = impParsePrio(pm[1]); s = s.replace(pm[0], " ").trim(); }
+    var tm = s.match(/[（(\[【]?\s*(\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{1,2}月\d{1,2}[日号]?|\d+(?:\.\d+)?\s*(?:周|天|日|小时))\s*[)）\]】]?/);
+    if(tm){ dl = impResolveDate(tm[1]); s = s.replace(tm[0], " ").trim(); }
+    var dm = s.match(/^(.{1,30}?)\s*(?:——|—|--|：|:)\s*(.+)$/);
+    if(dm && ["http","https"].indexOf(dm[1].trim().toLowerCase()) < 0){
+      name = dm[1].trim(); desc = dm[2].trim();
+    }else{
+      name = s; desc = "";
+    }
+  }
+  name = cleanText(name, 30);
+  if(!name) return null;
+  desc = cleanText(desc, 60);
+  if(!prio) prio = "mid";
+  if(!dl) dl = addDays(todayStr(), IMP_PRIOS[prio].days);
+  return { name:name, desc:desc, prio:prio, deadline:dl };
+}
+
+/* ---- Markdown → 任务列表（列表行 / 标题行） ---- */
+function impParseMarkdown(text){
+  var lines = String(text == null ? "" : text).split(/\r?\n/), tasks = [];
+  for(var i = 0; i < lines.length; i++){
+    var line = lines[i].trim();
+    if(!line) continue;
+    if(/^(```|~~~)/.test(line)) continue;
+    if(/^([-*_]\s*){3,}$/.test(line)) continue;
+    if(/^\|[\s\-:|]+\|$/.test(line)) continue;
+    var m = line.match(/^(?:#{1,6}\s+|[-*+]\s+|\d+[.)]\s+)(.*)$/);
+    if(!m) continue;                                  /* 非列表/标题行不视为任务 */
+    if(/^#\s/.test(line)) continue;                   /* 一级标题通常是文档标题，不作为任务 */
+    var rest = m[1].replace(/^\[[ xX]\]\s*/, "").trim()
+      .replace(/\*\*([^*]+)\*\*/g, "$1")
+      .replace(/\*([^*]+)\*/g, "$1")
+      .replace(/`([^`]+)`/g, "$1");
+    if(!rest) continue;
+    var t = impParseTaskLine(rest);
+    if(t) tasks.push(t);
+    if(tasks.length >= IMP_MAX) break;
+  }
+  return tasks;
+}
+
+/* ---- Excel 行数组 → 任务列表（自动识别表头） ---- */
+function impParseXlsxRows(rows){
+  if(!rows || !rows.length) return [];
+  var KEY = {
+    name: ["任务名称","任务","名称","标题","事项","目标"],
+    desc: ["描述","说明","备注","详情"],
+    prio: ["优先级","优先","紧急"],
+    date: ["预计完成时间","预计完成","完成时间","截止","期限","时间","日期"]
+  };
+  var cols = {}, headRow = -1, r, c;
+  for(r = 0; r < Math.min(rows.length, 5); r++){
+    var cells = rows[r] || [], nonEmpty = 0, hit = false;
+    for(c = 0; c < cells.length; c++){
+      var v = String(cells[c] == null ? "" : cells[c]).trim();
+      if(!v) continue;
+      nonEmpty++;
+      var matched = false;
+      for(var k in KEY){
+        for(var i = 0; i < KEY[k].length; i++){
+          if(v.indexOf(KEY[k][i]) >= 0){
+            matched = true;
+            if(cols[k] == null) cols[k] = c;
+            break;
+          }
+        }
+        if(matched) break;
+      }
+      if(matched) hit = true;
+    }
+    if(hit && nonEmpty >= 2){ headRow = r; break; }
+  }
+  if(headRow < 0){
+    cols = { name:0 };
+    if((rows[0] || []).length > 1) cols.desc = 1;
+  }
+  var tasks = [];
+  for(r = headRow + 1; r < rows.length; r++){
+    var row = rows[r] || [];
+    var nc = cols.name != null ? cols.name : 0;
+    var name = cleanText(String(row[nc] == null ? "" : row[nc]), 30);
+    if(!name) continue;
+    var desc = cols.desc != null ? cleanText(String(row[cols.desc] == null ? "" : row[cols.desc]), 60) : "";
+    var prio = impParsePrio(cols.prio != null ? row[cols.prio] : "") || "mid";
+    var dl = impResolveDate(cols.date != null ? row[cols.date] : "") || addDays(todayStr(), IMP_PRIOS[prio].days);
+    tasks.push({ name:name, desc:desc, prio:prio, deadline:dl });
+    if(tasks.length >= IMP_MAX) break;
+  }
+  return tasks;
+}
+
+/* ---- SheetJS 懒加载（三源回退，失败交由调用方提示） ---- */
+function impLoadXlsx(cb){
+  if(window.XLSX){ cb(true); return; }
+  var i = 0;
+  (function next(){
+    if(i >= XLSX_URLS.length){ cb(false); return; }
+    var s = document.createElement("script"), done = false;
+    var timer = setTimeout(function(){
+      if(done) return; done = true;
+      if(s.parentNode) s.parentNode.removeChild(s);
+      next();
+    }, 8000);
+    s.src = XLSX_URLS[i++];
+    s.onload = function(){
+      if(done) return; done = true; clearTimeout(timer);
+      if(window.XLSX) cb(true);
+      else { if(s.parentNode) s.parentNode.removeChild(s); next(); }
+    };
+    s.onerror = function(){
+      if(done) return; done = true; clearTimeout(timer);
+      if(s.parentNode) s.parentNode.removeChild(s);
+      next();
+    };
+    document.head.appendChild(s);
+  })();
+}
+
+/* ---- 文件入口：类型与体积校验后分流 ---- */
+function impHandleFile(file){
+  if(impParsing) return;
+  impClearErrors();
+  if(!file) return;
+  var name = String(file.name || "文档");
+  var extMatch = name.match(/\.([a-z0-9]+)$/i);
+  var ext = extMatch ? extMatch[1].toLowerCase() : "";
+  if(ext !== "md" && ext !== "xlsx"){
+    impError(ext
+      ? "暂不支持 ." + ext + " 格式，仅接受 .md（Markdown）与 .xlsx（Excel）文件"
+      : "无法识别该文件类型，仅接受 .md（Markdown）与 .xlsx（Excel）文件");
+    return;
+  }
+  if(file.size === 0){
+    impError("「" + name + "」是空文件（0 字节），请检查后重新选择");
+    return;
+  }
+  if(file.size > IMP_MAX_BYTES){
+    impError("「" + name + "」超过 10MB，请拆分后再导入");
+    return;
+  }
+  impParsing = true;
+  impShow("loading");
+  $("impLoadingText").textContent = "正在解析「" + name + "」…";
+  setTimeout(function(){                              /* 让 loading 先绘制，解析不阻塞 */
+    if(ext === "md") impReadMarkdownFile(file);
+    else impReadXlsxFile(file);
+  }, 40);
+}
+function impFail(msg){
+  impParsing = false;
+  impShow("pick");
+  impError(msg);
+}
+function impReadMarkdownFile(file){
+  var fr = new FileReader();
+  fr.onload = function(){
+    setTimeout(function(){
+      var tasks = null;
+      try{ tasks = impParseMarkdown(fr.result); }catch(e){ tasks = null; }
+      impParsing = false;
+      if(tasks && tasks.length){ impEnterPreview(tasks); return; }
+      impShow("pick");
+      if(tasks && tasks.length === 0){
+        impError("文档里没有解析到任务：请用「- 任务」列表行（或「# 标题」行）书写任务后重试");
+      }else{
+        impError("文档解析失败，内容可能不是有效文本，请重试或改用 .xlsx 文件");
+      }
+    }, 30);
+  };
+  fr.onerror = function(){ impFail("文件读取失败，请重新选择文件"); };
+  fr.readAsText(file, "utf-8");
+}
+function impReadXlsxFile(file){
+  $("impLoadingText").textContent = "正在加载 Excel 解析引擎…";
+  impLoadXlsx(function(ok){
+    if(!impParsing) return;
+    if(!ok){
+      impFail("Excel 解析引擎加载失败（网络原因），请稍后重试，或改用 .md 文档导入");
+      return;
+    }
+    $("impLoadingText").textContent = "正在解析「" + file.name + "」…";
+    var fr = new FileReader();
+    fr.onload = function(){
+      setTimeout(function(){
+        var tasks = null;
+        try{
+          var wb = XLSX.read(fr.result, { type:"array" });
+          var ws = wb.Sheets[wb.SheetNames[0]];
+          var rows = XLSX.utils.sheet_to_json(ws, { header:1, raw:false, defval:"" });
+          tasks = impParseXlsxRows(rows);
+        }catch(e){ tasks = null; }
+        impParsing = false;
+        if(tasks && tasks.length){ impEnterPreview(tasks); return; }
+        impShow("pick");
+        if(tasks && tasks.length === 0){
+          impError("表格里没有解析到任务：请确认第一列是任务名称（可含表头：任务名称/描述/优先级/预计完成时间）");
+        }else{
+          impError("「" + file.name + "」可能已损坏或不是有效的 .xlsx 文件，请检查后重试");
+        }
+      }, 30);
+    };
+    fr.onerror = function(){ impFail("文件读取失败，请重新选择文件"); };
+    fr.readAsArrayBuffer(file);
+  });
+}
+
+/* ---- 预览：渲染 / 编辑 / 删除 / 确认导入 ---- */
+function impEnterPreview(tasks){
+  impTasks = tasks;
+  impClearErrors();
+  impShow("preview");
+  impRenderPreview();
+}
+function impRenderPreview(){
+  var html = "";
+  impTasks.forEach(function(t, i){
+    html += '<div class="imp-task" data-i="' + i + '">' +
+      '<div class="imp-row">' +
+        '<input aria-label="任务名称" class="imp-name" maxlength="30" type="text" value="' + esc(t.name) + '">' +
+        '<select aria-label="优先级" class="imp-prio">' +
+          '<option value="high"' + (t.prio === "high" ? " selected" : "") + '>高</option>' +
+          '<option value="mid"' + (t.prio === "mid" ? " selected" : "") + '>中</option>' +
+          '<option value="low"' + (t.prio === "low" ? " selected" : "") + '>低</option>' +
+        '</select>' +
+        '<button aria-label="删除该任务" class="imp-del" type="button">' +
+          '<svg fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="16"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+        '</button>' +
+      '</div>' +
+      '<div class="imp-row"><input aria-label="任务描述" class="imp-desc" maxlength="60" placeholder="任务描述（选填）" type="text" value="' + esc(t.desc || "") + '"></div>' +
+      '<div class="imp-row"><span class="imp-date-label">预计完成</span><input aria-label="预计完成日期" class="imp-date" type="date" value="' + esc(t.deadline) + '"></div>' +
+    '</div>';
+  });
+  if(!impTasks.length) html = '<div class="imp-empty">所有任务已删除，可点「重新选择」再导一次</div>';
+  $("impList").innerHTML = html;
+  $("impCount").textContent = impTasks.length;
+  $("impConfirm").textContent = impTasks.length ? ("导入 " + impTasks.length + " 项任务") : "导入任务";
+  $("impConfirm").disabled = !impTasks.length;
+}
+function impConfirmImport(){
+  impClearErrors();
+  var valid = impTasks.filter(function(t){ return t && t.name && t.name.trim(); });
+  if(!valid.length){ impError("请至少保留一个任务（任务名称不能为空）", "preview"); return; }
+  var bad = valid.filter(function(t){ return !isDateString(t.deadline); });
+  if(bad.length){ impError("有 " + bad.length + " 个任务的「预计完成」日期无效，请修正后再导入", "preview"); return; }
+  valid.forEach(function(t){
+    state.goals.push({
+      id: uid(),
+      name: cleanText(t.name, 30),
+      unit: "项",
+      total: 1,
+      deadline: t.deadline,
+      color: IMP_PRIOS[t.prio] ? IMP_PRIOS[t.prio].color : "#1a1a1a",
+      createdAt: todayStr(),
+      obstacle: "",
+      plan: "",
+      desc: cleanText(t.desc, 60),
+      prio: t.prio,
+      imported: true
+    });
+  });
+  save();
+  render();
+  impTasks = [];
+  closeImportModal();
+  toast("已导入 " + valid.length + " 个任务，去「今日打卡」开始吧");
+}
+
 /* ================= 周报复盘 ================= */
 var weekOffset=0; /* 0=本周 */
 function currentWeekRange(){
@@ -2092,6 +2574,92 @@ function bind(){
     }
     save(); closeGoalModal(); render();
   });
+
+  /* 文档导入弹窗 */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-docimport]"), function(btn){
+    btn.addEventListener("click", openImportModal);
+  });
+  $("impCancel1").addEventListener("click", closeImportModal);
+  $("impBack").addEventListener("click", function(){
+    if(impParsing) return;
+    impTasks = [];
+    impClearErrors();
+    $("impFile").value = "";
+    $("impDrop").classList.remove("dragover");
+    impShow("pick");
+  });
+  $("importModal").addEventListener("click", function(e){ if(e.target === $("importModal")) closeImportModal(); });
+  $("importModal").addEventListener("keydown", function(e){
+    if(e.key === "Escape"){ e.preventDefault(); closeImportModal(); return; }
+    if(e.key !== "Tab") return;
+    var items = Array.prototype.slice.call($("importModal").querySelectorAll('button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter(function(x){ return x.offsetParent !== null; });
+    if(!items.length) return;
+    var first = items[0], last = items[items.length - 1];
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  });
+  /* 拖拽区：点击 / 键盘 / 拖放 */
+  var drop = $("impDrop");
+  drop.addEventListener("click", function(){ $("impFile").click(); });
+  drop.addEventListener("keydown", function(e){
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); $("impFile").click(); }
+  });
+  ["dragenter","dragover"].forEach(function(ev){
+    drop.addEventListener(ev, function(e){
+      e.preventDefault(); e.stopPropagation();
+      drop.classList.add("dragover");
+    });
+  });
+  ["dragleave","dragend"].forEach(function(ev){
+    drop.addEventListener(ev, function(e){
+      e.preventDefault(); e.stopPropagation();
+      drop.classList.remove("dragover");
+    });
+  });
+  drop.addEventListener("drop", function(e){
+    e.preventDefault(); e.stopPropagation();
+    drop.classList.remove("dragover");
+    if(impParsing) return;
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) impHandleFile(f);
+  });
+  /* 弹窗打开时，避免文件被浏览器直接打开 */
+  window.addEventListener("dragover", function(e){
+    if($("importModal").classList.contains("show")) e.preventDefault();
+  });
+  window.addEventListener("drop", function(e){
+    if($("importModal").classList.contains("show")) e.preventDefault();
+  });
+  $("impPick").addEventListener("click", function(){ $("impFile").click(); });
+  $("impFile").addEventListener("change", function(){
+    if(this.files && this.files[0]) impHandleFile(this.files[0]);
+  });
+  /* 预览：编辑 / 删除 / 确认 */
+  $("impList").addEventListener("input", function(e){
+    var box = e.target.closest ? e.target.closest(".imp-task") : null;
+    if(!box) return;
+    var t = impTasks[+box.dataset.i];
+    if(!t) return;
+    if(e.target.classList.contains("imp-name")) t.name = e.target.value;
+    else if(e.target.classList.contains("imp-desc")) t.desc = e.target.value;
+    else if(e.target.classList.contains("imp-date")) t.deadline = e.target.value;
+  });
+  $("impList").addEventListener("change", function(e){
+    if(!e.target.classList || !e.target.classList.contains("imp-prio")) return;
+    var box = e.target.closest ? e.target.closest(".imp-task") : null;
+    if(!box) return;
+    var t = impTasks[+box.dataset.i];
+    if(t) t.prio = e.target.value;
+  });
+  $("impList").addEventListener("click", function(e){
+    var del = e.target.closest ? e.target.closest(".imp-del") : null;
+    if(!del) return;
+    var box = del.closest(".imp-task");
+    if(!box) return;
+    impTasks.splice(+box.dataset.i, 1);
+    impRenderPreview();
+  });
+  $("impConfirm").addEventListener("click", impConfirmImport);
 
   /* 周报 */
   $("weekPrev").addEventListener("click",function(){ weekOffset--; renderWeekly(); });
