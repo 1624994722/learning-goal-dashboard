@@ -84,29 +84,57 @@
   .steps .step{display:flex;align-items:center;gap:10px}
   .steps .no{width:24px;height:24px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex:none}
 
-  /* ---------- 番茄时钟 ---------- */
-  .pomo-modes{display:flex;gap:6px;background:#efece3;border-radius:12px;padding:4px;margin-bottom:18px}
+  /* ---------- 番茄时钟：悬浮玻璃计时器 ---------- */
+  #panel-pomo{--pomo-over:78px}
+  #panel-pomo.active{max-width:660px;margin:0 auto}
+  .card.pomo-glass{
+    position:sticky;top:10px;z-index:6;
+    margin-bottom:calc(-1 * var(--pomo-over));
+    background:linear-gradient(165deg,rgba(255,255,255,.44) 0%,rgba(255,255,255,.16) 100%);
+    -webkit-backdrop-filter:blur(22px) saturate(1.2);
+    backdrop-filter:blur(22px) saturate(1.2);
+    border:1px solid rgba(255,255,255,.62);
+    box-shadow:0 18px 44px -18px rgba(29,27,24,.30), inset 0 1px 0 rgba(255,255,255,.72);
+  }
+  @supports not ((backdrop-filter:blur(2px)) or (-webkit-backdrop-filter:blur(2px))){
+    .card.pomo-glass{background:#fff;border:1.5px solid rgba(29,27,24,.14);box-shadow:var(--shadow)}
+  }
+  .pomo-grid{display:grid;gap:14px}
+  .pomo-grid>.card{margin-bottom:0}
+  .pomo-grid>.card:first-child{padding-top:calc(var(--pomo-over) + 18px)}
+  .pomo-modes{display:flex;gap:6px;background:#efece3;border-radius:12px;padding:4px;margin-bottom:16px}
   .pomo-modes button{flex:1;min-height:42px;border-radius:9px;font-size:13.5px;font-weight:600;color:var(--ink-2);transition:all .2s}
   .pomo-modes button.active{background:#fff;color:var(--ink);box-shadow:0 2px 8px rgba(29,27,24,.10)}
-  .pomo-ring-wrap{display:flex;justify-content:center;padding:4px 0 6px}
-  .pomo-ring{position:relative;width:208px;height:208px}
-  .pomo-ring svg{transform:rotate(-90deg);display:block}
-  .pomo-track{fill:none;stroke:#efece3;stroke-width:10}
+  .pomo-modes.is-break button.active{background:#faecd7;color:#92400e;box-shadow:0 2px 8px rgba(180,83,9,.18)}
+  .pomo-ring-wrap{display:flex;justify-content:center;padding:2px 0 4px}
+  .pomo-ring{position:relative;width:clamp(148px,40vw,208px);aspect-ratio:1/1}
+  .pomo-ring svg{width:100%;height:100%;transform:rotate(-90deg);display:block}
+  .pomo-track{fill:none;stroke:rgba(29,27,24,.10);stroke-width:10}
   .pomo-prog{fill:none;stroke:var(--brand);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .25s linear}
   .pomo-prog.is-break{stroke:#b45309}
   .pomo-face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
   .pomo-face b{font-size:44px;font-weight:800;letter-spacing:1px;line-height:1.1}
   .pomo-face span{font-size:13px;color:var(--ink-2);font-weight:600}
-  .pomo-actions{display:flex;gap:10px;margin-top:6px}
+  .pomo-face span.is-break{color:#b45309}
+  .pomo-actions{display:flex;gap:10px;margin-top:4px}
   .pomo-actions .btn{flex:1;min-height:48px}
-  .pomo-round{text-align:center;margin-top:14px;font-size:12.5px;color:var(--ink-2)}
+  #pomoStart.is-break{background:linear-gradient(135deg,#b45309,#92400e)}
+  .pomo-round{text-align:center;margin-top:12px;font-size:12.5px;color:var(--ink-2)}
   .pomo-round .dots{display:inline-flex;gap:6px;margin-left:8px;vertical-align:middle}
   .pomo-round .dots i{width:9px;height:9px;border-radius:99px;background:#e0dcd0;display:inline-block}
   .pomo-round .dots i.on{background:var(--brand)}
-  .pomo-durations{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)}
+  .pomo-settings{margin-top:12px;border-top:1px dashed rgba(29,27,24,.14);padding-top:10px}
+  .pomo-settings summary{display:flex;align-items:center;gap:8px;min-height:42px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--ink-2);list-style:none;user-select:none}
+  .pomo-settings summary::-webkit-details-marker{display:none}
+  .pomo-settings summary:hover{color:var(--ink)}
+  .pomo-settings summary .chev{margin-left:auto;transition:transform .25s ease;flex:none}
+  .pomo-settings[open] summary{margin-bottom:10px;color:var(--ink)}
+  .pomo-settings[open] summary .chev{transform:rotate(180deg)}
+  .pomo-durations{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
   .pomo-durations label{display:block;font-size:11px;color:var(--ink-3);font-weight:600;margin-bottom:4px;text-align:center}
   .pomo-durations input{width:100%;min-height:40px;border:1.5px solid var(--line);border-radius:10px;text-align:center;background:#fbfaf6;outline:none;font-variant-numeric:tabular-nums}
   .pomo-durations input:focus{border-color:var(--brand)}
+  #panel-pomo .stat-strip{grid-template-columns:repeat(2,1fr);margin-bottom:0}
   .pomo-hist-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
   .pomo-hist-row:last-child{border-bottom:none}
   .pomo-hist-row .tm{color:var(--ink-3);font-size:12px;flex:none;font-variant-numeric:tabular-nums}
@@ -117,9 +145,13 @@
     .pomo-durations{grid-template-columns:repeat(2,1fr)}
     .pomo-face b{font-size:38px}
   }
+  @media(min-width:768px){
+    .card.pomo-glass{top:80px}
+    .pomo-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+    .pomo-grid>.card{padding-top:calc(var(--pomo-over) + 18px)}
+  }
   @media(min-width:1024px){
-    #panel-pomo.active{display:grid;grid-template-columns:minmax(0,6fr) minmax(0,5fr);gap:16px;align-items:start}
-    #panel-pomo>.card{margin-bottom:0}
+    .card.pomo-glass{top:16px}
   }
 
   /* ---------- Nav ---------- */
@@ -547,12 +579,12 @@
 
   <!-- ===== Tab: Pomodoro ===== -->
   <section aria-hidden="true" aria-labelledby="tab-pomo" class="tab-panel" id="panel-pomo" role="tabpanel">
-    <div class="card">
+    <div class="card pomo-glass">
       <div class="card-title"><span class="dot"></span>番茄时钟</div>
       <div aria-label="番茄钟模式" class="pomo-modes" id="pomoModes" role="tablist"></div>
       <div class="pomo-ring-wrap">
         <div class="pomo-ring">
-          <svg aria-hidden="true" viewBox="0 0 200 200" width="208" height="208">
+          <svg aria-hidden="true" viewBox="0 0 200 200">
             <circle class="pomo-track" cx="100" cy="100" r="88"></circle>
             <circle class="pomo-prog" cx="100" cy="100" id="pomoProg" r="88"></circle>
           </svg>
@@ -568,18 +600,30 @@
         <button class="btn btn-ghost" id="pomoSkip">跳过</button>
       </div>
       <div class="pomo-round" id="pomoRound"></div>
-      <div class="pomo-durations">
-        <div><label for="pomoDurFocus">专注（分）</label><input id="pomoDurFocus" inputmode="numeric" max="120" min="1" type="number"></div>
-        <div><label for="pomoDurShort">短休息（分）</label><input id="pomoDurShort" inputmode="numeric" max="60" min="1" type="number"></div>
-        <div><label for="pomoDurLong">长休息（分）</label><input id="pomoDurLong" inputmode="numeric" max="90" min="1" type="number"></div>
-        <div><label for="pomoDurRounds">长休间隔（个）</label><input id="pomoDurRounds" inputmode="numeric" max="8" min="2" type="number"></div>
-      </div>
+      <details class="pomo-settings" id="pomoSettings">
+        <summary>
+          <svg aria-hidden="true" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>时长设置</span>
+          <svg aria-hidden="true" class="chev" fill="none" height="16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="16"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="pomo-durations">
+          <div><label for="pomoDurFocus">专注（分）</label><input id="pomoDurFocus" inputmode="numeric" max="120" min="1" type="number"></div>
+          <div><label for="pomoDurShort">短休息（分）</label><input id="pomoDurShort" inputmode="numeric" max="60" min="1" type="number"></div>
+          <div><label for="pomoDurLong">长休息（分）</label><input id="pomoDurLong" inputmode="numeric" max="90" min="1" type="number"></div>
+          <div><label for="pomoDurRounds">长休间隔（个）</label><input id="pomoDurRounds" inputmode="numeric" max="8" min="2" type="number"></div>
+        </div>
+      </details>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="dot" style="background:var(--amber)"></span>番茄统计</div>
-      <div class="stat-strip" id="pomoStats"></div>
-      <div class="pomo-hist" id="pomoHist"></div>
-      <p class="tiny" style="margin-top:10px">番茄数据保存在本机浏览器，不占用云端数据表。</p>
+    <div class="pomo-grid">
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--amber)"></span>番茄统计</div>
+        <div class="stat-strip" id="pomoStats"></div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span class="dot" style="background:var(--amber)"></span>今日记录</div>
+        <div class="pomo-hist" id="pomoHist"></div>
+        <p class="tiny" style="margin-top:10px">番茄数据保存在本机浏览器，不占用云端数据表。</p>
+      </div>
     </div>
   </section>
 
@@ -1721,6 +1765,9 @@ function pomoRender(){
   prog.style.strokeDasharray = POMO_CIRC;
   prog.style.strokeDashoffset = POMO_CIRC*(1 - (total>0 ? remain/total : 0));
   prog.classList.toggle("is-break", pomoMode!=="focus");
+  $("pomoModes").classList.toggle("is-break", pomoMode!=="focus");
+  $("pomoState").classList.toggle("is-break", pomoMode!=="focus");
+  $("pomoStart").classList.toggle("is-break", pomoMode!=="focus");
   $("pomoStart").textContent = pomoRunning ? "暂停" : (remain>=total ? "开始"+POMO_MODES[pomoMode] : "继续");
   var dots="";
   for(var i=0;i<pomoCfg.rounds;i++) dots+='<i class="'+(i<pomoCycle%pomoCfg.rounds?"on":"")+'"></i>';
